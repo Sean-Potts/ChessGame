@@ -7,12 +7,24 @@
 using namespace std;
 
 
-
+enum Pieces{pawn, knight, bishop, castle, queen, king};
 class ChessPeice
 {
 public:
-	ChessPeice() 
+	Pieces curPiece;
+
+	ChessPeice(Pieces piece)
+
 	{
+		curPiece = piece;
+		//this->color = color;
+		//this->canMove = move;
+
+	}
+
+	ChessPeice()
+	{
+
 	}
 	~ChessPeice() {
 
@@ -33,29 +45,38 @@ private:
 
 };
 
-class Pawn:ChessPeice
-{
-public:
 
-	Pawn()
-	{
-	}
-
-	~Pawn()
-	{
-	}
-
-private:
-
-};
 
 
 class ChessBoard
 {
 public:
 
+	// store refereences to objects as pointers
+	ChessPeice* board[8][8]; 
+
+
 	ChessBoard()
 	{
+		// sets up chess board
+		board[0][0] = new ChessPeice(castle);
+		for (int j = 0; j < 8; j+=7) {
+			board[j][0] = new ChessPeice(castle);
+			board[j][1] = new ChessPeice(knight);
+			board[j][2] = new ChessPeice(bishop);
+			board[j][4] = new ChessPeice(queen);
+			board[j][3] = new ChessPeice(king);
+			board[j][5] = new ChessPeice(bishop);
+			board[j][6] = new ChessPeice(knight);
+			board[j][7] = new ChessPeice(castle);
+		}
+		for (int i = 0; i < 8; i++) {
+			board[1][i] = new ChessPeice(pawn);
+		}
+		for (int i = 0; i < 8; i++) {
+			board[6][i] = new ChessPeice(pawn);
+		}
+
 	}
 
 	~ChessBoard()
@@ -72,8 +93,13 @@ class Game
 {
 public:
 
+	//Player playersInGame;
+	//essBoard chessGame;
+	
+
 	Game()
 	{
+
 	}
 
 	~Game()
@@ -89,7 +115,12 @@ private:
 
 class Player
 {
+	
 public:
+
+	string stateOfGame;
+	string name; 
+	int numberTurns;
 
 	Player()
 	{
@@ -113,13 +144,3 @@ int main()
     std::cout << "Hello World!\n";
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
