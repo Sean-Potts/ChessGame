@@ -1,7 +1,112 @@
 // ChessGame.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
+// Later other files will be added for cleaner code. Currently development of classes will all be done in ChassGame.cpp before being seperated into different files. 
+#include <vector>
 #include <iostream>
+#include <string.h>
+
+using namespace std;
+
+
+
+class ChessPeice
+{
+public:
+	ChessPeice() 
+	{
+	}
+	~ChessPeice() {
+
+	}
+	
+	string getColor() {
+		return color;
+	}
+
+	void setColor(string setColor) {
+		color = setColor;
+	}
+
+private:
+
+	string color; 
+	bool canMove;
+
+};
+
+class Pawn:ChessPeice
+{
+public:
+
+	Pawn()
+	{
+	}
+
+	~Pawn()
+	{
+	}
+
+private:
+
+};
+
+
+class ChessBoard
+{
+public:
+
+	ChessBoard()
+	{
+	}
+
+	~ChessBoard()
+	{
+	}
+
+private:
+
+};
+
+
+
+class Game
+{
+public:
+
+	Game()
+	{
+	}
+
+	~Game()
+	{
+	}
+
+private:
+
+};
+
+
+
+
+class Player
+{
+public:
+
+	Player()
+	{
+	}
+
+	~Player()
+	{
+	}
+
+private:
+
+};
+
+
+
+
+
 
 int main()
 {
