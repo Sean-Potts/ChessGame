@@ -34,6 +34,7 @@ class ChessPeice
 public:
 	Pieces curPiece;
 	Colors color;
+	bool specialMove = true;
 
 	ChessPeice(Pieces piece, Colors color)
 	{
@@ -48,7 +49,121 @@ public:
 	~ChessPeice() {
 
 	}
+
+	// diag move is  1 horizontal + 1 vertical 
+
+
+	std::vector<std::pair<int, int>> getPossibleMoves() {
+
+		std::vector<pair<int, int> > PossibleMoves;
+
+		switch (curPiece)
+		{
+		case pawn:
+			if (specialMove == true)
+			{
+				PossibleMoves.push_back(std::make_pair(2, 0));
+				PossibleMoves.push_back(std::make_pair(1, 0));
+				PossibleMoves.push_back(std::make_pair(1, 1));
+				specialMove = false;
+			}
+			else
+			{
+				PossibleMoves.push_back(std::make_pair(1, 0));
+				PossibleMoves.push_back(std::make_pair(1, 1));
+			}
+			break;
+
+		case knight:
+			PossibleMoves.push_back(std::make_pair(2, 1));
+			PossibleMoves.push_back(std::make_pair(2, -1));
+			PossibleMoves.push_back(std::make_pair(-2, 1));
+			PossibleMoves.push_back(std::make_pair(-2, -1));
+			PossibleMoves.push_back(std::make_pair(1, 2));
+			PossibleMoves.push_back(std::make_pair(-1, 2));
+			PossibleMoves.push_back(std::make_pair(1, -2));
+			PossibleMoves.push_back(std::make_pair(-1, -2));
+			break;
+		case queen:
+			// Horizontal movements (positive)
+			for (int i = 1; i < 8; ++i) {
+				PossibleMoves.emplace_back(i, 0);
+			}
+
+			// Horizontal movements (negative)
+			for (int i = -1; i > -8; --i) {
+				PossibleMoves.emplace_back(i, 0);
+			}
+
+			// Vertical movements (positive)
+			for (int i = 1; i < 8; ++i) {
+				PossibleMoves.emplace_back(0, i);
+			}
+
+			// Vertical movements (negative)
+			for (int i = -1; i > -8; --i) {
+				PossibleMoves.emplace_back(0, i);
+			}
+
+			// Diagonal movements (positive)
+			for (int i = 1, j = 1; i < 8; ++i, ++j) {
+				PossibleMoves.emplace_back(i, j);
+			}
+
+			for (int i = -1, j = -1; i > -8; --i, --j) {
+				PossibleMoves.emplace_back(i, j);
+			}
+
+			for (int i = -1, j = 1; i > -8; --i, ++j) {
+				PossibleMoves.emplace_back(i, j);
+			}
+
+			for (int i = 1, j = -1; i < 8; ++i, --j) {
+				PossibleMoves.emplace_back(i, j);
+			}
+
+			break;
+
+		case castle:
+			// Horizontal movements (positive)
+			for (int i = 1; i < 8; ++i) {
+				PossibleMoves.emplace_back(i, 0);
+			}
+
+			// Horizontal movements (negative)
+			for (int i = -1; i > -8; --i) {
+				PossibleMoves.emplace_back(i, 0);
+			}
+
+			// Vertical movements (positive)
+			for (int i = 1; i < 8; ++i) {
+				PossibleMoves.emplace_back(0, i);
+			}
+
+			// Vertical movements (negative)
+			for (int i = -1; i > -8; --i) {
+				PossibleMoves.emplace_back(0, i);
+			}
+
+		case king:
+			PossibleMoves.emplace_back(-1, -1);
+			PossibleMoves.emplace_back(-1, 1);
+			PossibleMoves.emplace_back(1, -1);
+			PossibleMoves.emplace_back(1, 1);
+
+			PossibleMoves.emplace_back(0, -1);
+			PossibleMoves.emplace_back(0, 1);
+			PossibleMoves.emplace_back(1, 0);
+			PossibleMoves.emplace_back(-1, 0);
+			break;
+
+		default:
+			break;
+			
+		}
+		return PossibleMoves;
 	
+	}
 	
 	// how it should move
 
@@ -249,8 +364,18 @@ private:
 
 
 
+// pawn moves one space forward/2 at the start.. condition to check spaces to the left+up & right+up for takening a peice 
 
+// castle can move left/right/up/down any number of spaces need to check each space infront to see if something occupies it.
 
+// bishop can move diagnol.. left/up||down right/up||down
+
+// king can move 1 space diag or ver/hor
+
+// knight can move in an L 2 ver/hor one left/right
+
+// logic for each peice needs to be stored in the peice class! 
+// methods like move, need to check what piece is being moved, and check if a piece is in the way, 
 
 
 
