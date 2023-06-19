@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string.h>
 #include <map>
+#include <conio.h>
 
 using namespace std;
 
@@ -195,8 +196,11 @@ public:
 
 	// store refereences to objects as pointers
 	// if chessBoard is NULL there is an empty space to move to. 
+	
+	// properties
 	ChessPeice* board[8][8] = { NULL };
 
+	int selectedPieceLocation[2];
 	//tell peice if it can move
 
 	ChessBoard()
@@ -224,13 +228,24 @@ public:
 
 	}
 
-	void swapElements(int row1, int col1, int row2, int col2) {
-
+	void swapElements(int row1, int col1, int row2, int col2) 
+	{
 		std::swap(this->board[row1][col1], this->board[row2][col2]);
-
 	}
 
-	void validMoves() {
+
+	void removeElements(int col1, int row1, int col2, int row2) 
+	{
+
+		this->board[col2][row2] = this->board[col1][row1];
+		this->board[col1][row1] = NULL;
+
+	}
+	
+
+	 vector<pair<int, int> > validMoves() {
+
+
 		cout << "select Piece col(X)/row(Y)" << endl;
 		string piece;
 		cin >> piece;
@@ -238,6 +253,8 @@ public:
 		int rowPiece = piece[1] - '0';
 
 		cout << "Piece selected: " << pieceNames[board[colPiece][rowPiece]->curPiece] << endl;
+		// assign location
+		selectedPieceLocation[0]= colPiece, selectedPieceLocation[1] = rowPiece;
 
 		std::vector<pair<int, int> > PossibleMoves = this->board[colPiece][rowPiece]->getPossibleMoves();
 		std::vector<pair<int, int> > ValidMoves; 
@@ -287,13 +304,18 @@ public:
 		{
 			cout << it->first << ", " << it->second << endl;
 		}
+		return ValidMoves;
+
+	 }
 
 
-	}
+
+	
 
 	~ChessBoard()
 	{
 	}
+
 	void MovePiece(Colors pieceColor) 
 	{
 		cout << "What piece do you want to move?" << endl;
@@ -451,15 +473,71 @@ private:
 // logic for each peice needs to be stored in the peice class! 
 // methods like move, need to check what piece is being moved, and check if a piece is in the way, 
 
+void displayOptions(const std::vector<std::pair<int, int>>& ValidMoves, int selectedOption)
+{
+	std::cout << "Valid moves are as follows:" << std::endl;
 
+	for (int i = 0; i < ValidMoves.size(); i++)
+	{
+		if (i == selectedOption)
+			std::cout << "-> ";
+		else
+			std::cout << "   ";
+
+		std::cout << ValidMoves[i].first << ", " << ValidMoves[i].second << std::endl;
+	}
+}
 
 int main()
 {
 	ChessBoard chessboard;
 
 	chessboard.MovePiece(white);
-	chessboard.validMoves();
+	
+	std::vector<std::pair<int, int>> ValidMoves = chessboard.validMoves();
+	// Populate the ValidMoves vector
 
+	int selectedOption = 0;
+	int keyPressed = 0;
+
+	while (keyPressed != 13) // 13 is the ASCII value for Enter key
+	{
+		system("cls"); // Clear the console (Windows)
+
+		displayOptions(ValidMoves, selectedOption);
+
+		// Handle user input
+		keyPressed = _getch(); // Use getch() to get a character without waiting for the Enter key
+
+		if (keyPressed == 224) // 224 is the extended key code
+		{
+			// Arrow key was pressed
+			keyPressed = _getch(); // Read the actual key code
+
+			if (keyPressed == 72) // 72 is the key code for up arrow
+			{
+				// Up arrow key was pressed
+				if (selectedOption > 0)
+					selectedOption--;
+			}
+			else if (keyPressed == 80) // 80 is the key code for down arrow
+			{
+				// Down arrow key was pressed
+				if (selectedOption < ValidMoves.size() - 1)
+					selectedOption++;
+			}
+		}
+	}
+
+	// Print the selected option
+	std::cout << "Selected option: " << ValidMoves[selectedOption].first << ", "
+		<< ValidMoves[selectedOption].second << std::endl;
+
+	
+	chessboard.removeElements(chessboard.selectedPieceLocation[0], chessboard.selectedPieceLocation[1], ValidMoves[selectedOption].first, ValidMoves[selectedOption].second);
+	chessboard.MovePiece(white);
+
+	return 0;
 
 
 	
