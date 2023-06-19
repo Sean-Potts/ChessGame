@@ -62,14 +62,25 @@ public:
 		case pawn:
 			if (specialMove == true)
 			{
-				PossibleMoves.push_back(std::make_pair(2, 0));
-				PossibleMoves.push_back(std::make_pair(1, 0));
-				PossibleMoves.push_back(std::make_pair(1, 1));
-				specialMove = false;
+				if (color == black) {
+														 //i=x  j=y
+					PossibleMoves.push_back(std::make_pair(0, 2));
+					PossibleMoves.push_back(std::make_pair(0, 1));
+					PossibleMoves.push_back(std::make_pair(1, 1));
+					PossibleMoves.push_back(std::make_pair(-1, 1));
+					specialMove = false;
+				}
+				else {
+					PossibleMoves.push_back(std::make_pair(0, -2));
+					PossibleMoves.push_back(std::make_pair(0, -1));
+					PossibleMoves.push_back(std::make_pair(1, -1));
+					PossibleMoves.push_back(std::make_pair(-1, -1));
+					specialMove = false;
+				}
 			}
 			else
 			{
-				PossibleMoves.push_back(std::make_pair(1, 0));
+				PossibleMoves.push_back(std::make_pair(0, 1));
 				PossibleMoves.push_back(std::make_pair(1, 1));
 			}
 			break;
@@ -144,8 +155,10 @@ public:
 			for (int i = -1; i > -8; --i) {
 				PossibleMoves.emplace_back(0, i);
 			}
+			break;
 
 		case king:
+
 			PossibleMoves.emplace_back(-1, -1);
 			PossibleMoves.emplace_back(-1, 1);
 			PossibleMoves.emplace_back(1, -1);
@@ -167,7 +180,7 @@ public:
 	
 	// how it should move
 
-private:
+private:	
 
 	//bool canMove;
 
@@ -188,25 +201,25 @@ public:
 
 	ChessBoard()
 	{
-		Colors colorOfPiece = white;
+		Colors colorOfPiece = black;
 		// sets up chess board
 	
 		for (int j = 0; j < 8; j+=7) {
-			board[j][0] = new ChessPeice(castle, colorOfPiece);
-			board[j][1] = new ChessPeice(knight, colorOfPiece);
-			board[j][2] = new ChessPeice(bishop, colorOfPiece);
-			board[j][4] = new ChessPeice(queen, colorOfPiece);
-			board[j][3] = new ChessPeice(king, colorOfPiece);
-			board[j][5] = new ChessPeice(bishop, colorOfPiece);
-			board[j][6] = new ChessPeice(knight, colorOfPiece);
-			board[j][7] = new ChessPeice(castle, colorOfPiece);
-			colorOfPiece = black;
+			board[0][j] = new ChessPeice(castle, colorOfPiece);
+			board[1][j] = new ChessPeice(knight, colorOfPiece);
+			board[2][j] = new ChessPeice(bishop, colorOfPiece);
+			board[3][j] = new ChessPeice(queen, colorOfPiece);
+			board[4][j] = new ChessPeice(king, colorOfPiece);
+			board[5][j] = new ChessPeice(bishop, colorOfPiece);
+			board[6][j] = new ChessPeice(knight, colorOfPiece);
+			board[7][j] = new ChessPeice(castle, colorOfPiece);
+			colorOfPiece = white;
 		}
 		for (int i = 0; i < 8; i++) {
-			board[1][i] = new ChessPeice(pawn, white);
+			board[i][1] = new ChessPeice(pawn, black);
 		}
 		for (int i = 0; i < 8; i++) {
-			board[6][i] = new ChessPeice(pawn, black);
+			board[i][6] = new ChessPeice(pawn, white);
 		}
 
 	}
@@ -214,6 +227,67 @@ public:
 	void swapElements(int row1, int col1, int row2, int col2) {
 
 		std::swap(this->board[row1][col1], this->board[row2][col2]);
+
+	}
+
+	void validMoves() {
+		cout << "select Piece col(X)/row(Y)" << endl;
+		string piece;
+		cin >> piece;
+		int colPiece = piece[0] - '0';
+		int rowPiece = piece[1] - '0';
+
+		cout << "Piece selected: " << pieceNames[board[colPiece][rowPiece]->curPiece] << endl;
+
+		std::vector<pair<int, int> > PossibleMoves = this->board[colPiece][rowPiece]->getPossibleMoves();
+		std::vector<pair<int, int> > ValidMoves; 
+
+		// vector of pairs somewhat working now its type to validate the movement of the piece 
+		// if anything is in the way example to the left, all negative -x values dont work with a y value of 0 dont work cause thats a linear movement
+		for (auto it = begin(PossibleMoves); it != end(PossibleMoves); it++) {
+		
+			if ((colPiece + it->first) >= 0 && (colPiece + it->first) <= 7 && (rowPiece + it->second) >= 0 && (rowPiece + it->second) <= 7) {
+
+				if (board[colPiece + it->first][rowPiece + it->second] != NULL) {
+					
+						if (board[colPiece + it->first][rowPiece + it->second]->color == board[colPiece][rowPiece]->color)
+						{							
+							while (it->first >= 0 && it != end(PossibleMoves) && it->second == 0) 
+							{
+								it++;
+							}
+						}
+						else 
+						{
+							
+							cout << "valid move take piece" << endl;
+							ValidMoves.emplace_back(it->first+colPiece, it->second+rowPiece);
+							cout << it->first << ", " << it->second << endl;
+						}
+				}
+				else {
+					if (board[colPiece][rowPiece]->curPiece == pawn && it->first == 0 ) {
+						cout << "valid move empty spot" << endl;
+						ValidMoves.emplace_back(it->first + colPiece, it->second + rowPiece);
+						cout << it->first << ", " << it->second << endl;
+					}
+					else {
+						cout << "not valid because no piece is there" << endl;
+					}
+				}
+			}
+			else {
+				cout << "invalid move" << it->first << ", " << it->second << endl;
+			}
+		
+		}
+
+		cout << "\nValid moves are as follows" << endl;
+		for (auto it = begin(ValidMoves); it != end(ValidMoves); it++) 
+		{
+			cout << it->first << ", " << it->second << endl;
+		}
+
 
 	}
 
@@ -225,8 +299,8 @@ public:
 		cout << "What piece do you want to move?" << endl;
 
 		// Prints ChessBoard for Playing/Testing
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 8; ++j) {
+		for (int j = 0; j < 8; ++j) {
+			for (int i = 0; i < 8; ++i) {
 				if (board[i][j] == NULL) {
 					cout << "EMP ";
 				}
@@ -235,14 +309,14 @@ public:
 				}
 				
 			}
-			cout << i;
+			cout << j;
 			cout << std::endl;
 		}
 		for (int i = 0; i < 8; i++) {
 			cout <<  i << "   ";
 		}
 
-		cout << endl;
+		/* cout << endl;
 		cout << "Select a piece using Column/Row formate" << endl;
 	
 		string piece;
@@ -277,7 +351,7 @@ public:
 		}
 		for (int i = 0; i < 8; i++) {
 			cout << i << "   ";
-		}
+		} */
 
 	}
 
@@ -384,6 +458,8 @@ int main()
 	ChessBoard chessboard;
 
 	chessboard.MovePiece(white);
+	chessboard.validMoves();
+
 
 
 	
